@@ -3,66 +3,74 @@
 #include <stdlib.h>
 #include <fstream>
 #include <string>
+#include <chrono> 
 #include <algorithm>
 #include <ctime>
 #include <math.h>
+#include <random> 
 #include <time.h>
+#include <vector>
 using namespace std;
+
 
 
 int main() {
     clock_t tic = clock();
-    int i = 0,b,r,c[1000],seq[1000];
-    double a,dt,d=2000,x[1000],y[1000],xmin[1000],ymin[1000];
+    int i = 0,b,r,c[1000];
+    char *pEnd;
+    double a,dt=0.0,d=2000.0,x[1000],y[1000],xmin[1000],ymin[1000];
+    vector<int> seq(1000);
     ifstream inputFile("tsp.txt");
 
     string buf_l, buf_r;
     while (inputFile>>buf_l>>buf_r) {
+        x[i] = 0;
+        y[i] = 0;
         x[i]=stod(buf_l);
         y[i]=stod(buf_r);
+
         i++;
     }
     
 
-    for(int j = 0; j < i; j++){
-        /* printf("%f %f\n",x[j],y[j]); */
-    } 
-    
     inputFile.close();
 
 
     srand(time(NULL));
-    
+    for(i = 0; i < 1000; i++){
+        seq[i] = i;
+    }    
 
-    for(int z = 0; z < 100; z++){
+    for(int z = 0; z < 10000; z++){
 
-        for(i = 0; i < 1000; i++){
-            c[i] = i;
-        }
 
-        for(i = 999; i >= 0; i--){
-            r = rand()%i;
-            seq[i-1] = c[r];            
-            while (r<i-1){
-                c[r]=c[r+1];
-                r++;
-            }
-        }
+        unsigned seed = chrono::system_clock::now().time_since_epoch().count();
 
+        shuffle(seq.begin(), seq.end(), default_random_engine(seed));
         
         
-        dt = sqrt(pow((x[seq[0]]-x[seq[999]]),2)+pow((y[seq[0]]-y[seq[999]]),2)); 
+        // for(i = 0; i < 1000; i++){
+        //     cout<< seq[i] << endl;
+        // }
 
+
+        
+        dt = 0;
+        
 
         for(i = 0; i < 1000; i++){
-            if (seq[i] != 0)
-                a = sqrt(pow((x[seq[i]]-x[seq[i]-1]),2)+pow((y[seq[i]]-y[seq[i]-1]),2)); 
+            if (seq[i] != 0) 
+                a = sqrt(pow((x[seq[i]]-x[seq[i]-1]),2)+pow((y[seq[i]]-y[seq[i]-1]),2));
+                
             /* printf("%d %f %f %f %f\n",seq[i],a,dt,x[seq[i]],y[seq[i]]); */
             dt += a;
-        }   
+        } 
+        dt += sqrt(pow((x[seq[0]]-x[seq[999]]),2)+pow((y[seq[0]]-y[seq[999]]),2)); 
+
         if (dt < d){
             d = dt;
             printf("Current min parameter is %f %f\n",d,dt);
+            cout << z << endl;
             for(i = 0; i < 1000; i++){
                 xmin[i] = x[seq[i]];
                 ymin[i] = y[seq[i]];
