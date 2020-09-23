@@ -1,7 +1,7 @@
 clc
 
 tic
-d = 10000;
+d = 1000;
 A = table2array(tsp);
 fig = figure;
 z = 1;
@@ -33,7 +33,13 @@ for i = 1:100
         end
         z = z + 1;
     end
+    min(i) = d;
 end
+plot(min);
+title("Traveling Salesman Shortest Path");
+xlable("Revolutions");
+ylable("Shortest path");
+
 toc
 
 
